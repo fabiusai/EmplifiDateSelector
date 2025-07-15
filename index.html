@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emplifi editoriale - selezione date</title>
+    <style>
+        /* Stili per un aspetto pulito e moderno */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #1a2c4e;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .date-picker-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .date-input {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .output-section {
+            margin-top: 30px;
+        }
+
+        #outputUrl {
+            width: 100%;
+            padding: 10px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.9rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            margin-bottom: 15px;
+            box-sizing: border-box; /* Assicura che il padding non aumenti la larghezza */
+        }
+        
+        #copyFeedback {
+            color: #28a745;
+            font-weight: bold;
+            margin-left: 10px;
+            visibility: hidden; /* Nascosto di default */
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Emplifi editoriale - selezione date</h1>
+
+        <div class="date-picker-group">
+            <div class="date-input">
+                <label for="startDate">Data di inizio:</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="date-input">
+                <label for="endDate">Data di fine:</label>
+                <input type="date" id="endDate">
+            </div>
+        </div>
+
+        <button id="processButton">Elabora</button>
+
+        <div class="output-section">
+            <input type="text" id="outputUrl" readonly placeholder="Il tuo link apparirà qui...">
+            <div>
+                <button id="copyButton">Copia URL</button>
+                <span id="copyFeedback">Copiato!</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Attendi che il contenuto della pagina sia caricato
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // URL di base da modificare
+            const baseUrl = 'https://app.emplifi.io/307036/content/feed?date=%7B%22startDate%22%3A%222025-07-15%22%2C%22endDate%22%3A%222025-07-15%22%7D&filter=%5B%7B%22type%22%3A%22PROFILE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22facebook-115066385228297%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-55933404846%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-167618226659138%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841404664900795%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841401517098538%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22linkedin-urn%3Ali%3Aorganization%3A7046%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22twitter-388197163%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22youtube-UCn4BzT_EeCOUUyF6GJrsQxA%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22DATA_GROUP%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22WITH_INSIGHTS%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22ORIGIN%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22OUTGOING%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22PUBLISHED_STATUS%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22PUBLISHED%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22CONTENT_TYPE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22POSTS%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22STORIES%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%5D&display=table&sort=%7B%22by%22%3A%22createdTime%22%2C%22order%22%3A%22desc%22%7D&tablePreset=60b353e2ce09d1000f74e427';
+            
+            // Riferimenti agli elementi HTML
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            const processButton = document.getElementById('processButton');
+            const outputUrlInput = document.getElementById('outputUrl');
+            const copyButton = document.getElementById('copyButton');
+            const copyFeedback = document.getElementById('copyFeedback');
+            
+            // Imposta le date di oggi come default
+            const today = new Date().toISOString().split('T')[0];
+            startDateInput.value = today;
+            endDateInput.value = today;
+
+            // Funzione per elaborare l'URL
+            processButton.addEventListener('click', () => {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+
+                if (!startDate || !endDate) {
+                    alert('Per favore, seleziona sia la data di inizio che quella di fine.');
+                    return;
+                }
+                
+                // Un modo più sicuro per modificare i parametri dell'URL
+                // 1. Creiamo un oggetto URL
+                const url = new URL(baseUrl);
+                
+                // 2. Prendiamo il parametro 'date', che è una stringa JSON
+                const dateParam = url.searchParams.get('date');
+                
+                // 3. Convertiamo la stringa JSON in un oggetto JavaScript
+                const dateObject = JSON.parse(dateParam);
+                
+                // 4. Modifichiamo le date nell'oggetto
+                dateObject.startDate = startDate;
+                dateObject.endDate = endDate;
+                
+                // 5. Riconvertiamo l'oggetto in una stringa JSON
+                const newDateJSON = JSON.stringify(dateObject);
+                
+                // 6. Aggiorniamo il parametro 'date' nell'URL (l'encoding viene fatto automaticamente)
+                url.searchParams.set('date', newDateJSON);
+                
+                // 7. Mostriamo il risultato finale
+                outputUrlInput.value = url.toString();
+            });
+
+            // Funzione per copiare l'URL
+            copyButton.addEventListener('click', () => {
+                const urlToCopy = outputUrlInput.value;
+
+                if (!urlToCopy) {
+                    alert("Prima elabora un link da copiare!");
+                    return;
+                }
+                
+                // Usa l'API moderna del clipboard per la massima compatibilità
+                navigator.clipboard.writeText(urlToCopy).then(() => {
+                    // Mostra il feedback di successo
+                    copyFeedback.style.visibility = 'visible';
+                    copyFeedback.style.opacity = '1';
+
+                    // Nascondi il feedback dopo 2 secondi
+                    setTimeout(() => {
+                        copyFeedback.style.opacity = '0';
+                        // Attendi la fine della transizione prima di nasconderlo completamente
+                        setTimeout(() => {
+                           copyFeedback.style.visibility = 'hidden';
+                        }, 500);
+                    }, 2000);
+
+                }).catch(err => {
+                    console.error('Errore durante la copia: ', err);
+                    alert("Impossibile copiare il link. Controlla i permessi del browser.");
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
