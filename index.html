@@ -13,7 +13,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             padding: 20px;
         }
@@ -61,7 +61,7 @@
             font-size: 1rem;
         }
         
-        button {
+        #processButton {
             background-color: #007bff;
             color: white;
             border: none;
@@ -73,37 +73,67 @@
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
         
-        button:hover {
+        #processButton:hover {
             background-color: #0056b3;
-        }
-        
-        button:active {
-            transform: scale(0.98);
         }
 
         .output-section {
             margin-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 25px;
         }
 
-        #outputUrl {
-            width: 100%;
-            padding: 10px;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 0.9rem;
-            border: 1px solid #ddd;
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        /* Stile comune per tutti i bottoni/link-bottoni */
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            border: none;
+            padding: 12px 25px;
             border-radius: 6px;
-            background-color: #f9f9f9;
-            margin-bottom: 15px;
-            box-sizing: border-box; /* Assicura che il padding non aumenti la larghezza */
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            text-align: center;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: #28a745; /* Verde per l'azione principale */
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d; /* Grigio per l'azione secondaria */
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
         }
         
         #copyFeedback {
             color: #28a745;
             font-weight: bold;
-            margin-left: 10px;
             visibility: hidden; /* Nascosto di default */
             opacity: 0;
             transition: opacity 0.5s ease;
+            /* Posizionato per non spostare gli altri bottoni */
+            position: absolute;
+            transform: translateX(10px);
         }
     </style>
 </head>
@@ -125,30 +155,32 @@
 
         <button id="processButton">Elabora</button>
 
-        <div class="output-section">
-            <input type="text" id="outputUrl" readonly placeholder="Il tuo link apparirà qui...">
-            <div>
-                <button id="copyButton">Copia URL</button>
+        <!-- Sezione Risultato, inizialmente nascosta -->
+        <div class="output-section" id="outputSection" style="display: none;">
+            <div class="button-group">
+                <a href="#" id="openLinkButton" target="_blank" class="btn btn-primary">Apri Link in Nuova Scheda</a>
+                <button id="copyButton" class="btn btn-secondary">Copia URL</button>
                 <span id="copyFeedback">Copiato!</span>
             </div>
         </div>
     </div>
 
     <script>
-        // Attendi che il contenuto della pagina sia caricato
         document.addEventListener('DOMContentLoaded', () => {
-
-            // URL di base da modificare
             const baseUrl = 'https://app.emplifi.io/307036/content/feed?date=%7B%22startDate%22%3A%222025-07-15%22%2C%22endDate%22%3A%222025-07-15%22%7D&filter=%5B%7B%22type%22%3A%22PROFILE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22facebook-115066385228297%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-55933404846%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-167618226659138%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841404664900795%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841401517098538%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22linkedin-urn%3Ali%3Aorganization%3A7046%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22twitter-388197163%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22youtube-UCn4BzT_EeCOUUyF6GJrsQxA%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22DATA_GROUP%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22WITH_INSIGHTS%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22ORIGIN%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22OUTGOING%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22PUBLISHED_STATUS%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22PUBLISHED%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22CONTENT_TYPE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22POSTS%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22STORIES%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%5D&display=table&sort=%7B%22by%22%3A%22createdTime%22%2C%22order%22%3A%22desc%22%7D&tablePreset=60b353e2ce09d1000f74e427';
             
             // Riferimenti agli elementi HTML
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
             const processButton = document.getElementById('processButton');
-            const outputUrlInput = document.getElementById('outputUrl');
+            const outputSection = document.getElementById('outputSection');
+            const openLinkButton = document.getElementById('openLinkButton');
             const copyButton = document.getElementById('copyButton');
             const copyFeedback = document.getElementById('copyFeedback');
             
+            // Variabile per memorizzare l'URL generato
+            let generatedUrl = '';
+
             // Imposta le date di oggi come default
             const today = new Date().toISOString().split('T')[0];
             startDateInput.value = today;
@@ -164,41 +196,34 @@
                     return;
                 }
                 
-                // Un modo più sicuro per modificare i parametri dell'URL
-                // 1. Creiamo un oggetto URL
                 const url = new URL(baseUrl);
-                
-                // 2. Prendiamo il parametro 'date', che è una stringa JSON
                 const dateParam = url.searchParams.get('date');
-                
-                // 3. Convertiamo la stringa JSON in un oggetto JavaScript
                 const dateObject = JSON.parse(dateParam);
                 
-                // 4. Modifichiamo le date nell'oggetto
                 dateObject.startDate = startDate;
                 dateObject.endDate = endDate;
                 
-                // 5. Riconvertiamo l'oggetto in una stringa JSON
                 const newDateJSON = JSON.stringify(dateObject);
-                
-                // 6. Aggiorniamo il parametro 'date' nell'URL (l'encoding viene fatto automaticamente)
                 url.searchParams.set('date', newDateJSON);
                 
-                // 7. Mostriamo il risultato finale
-                outputUrlInput.value = url.toString();
+                // Salva l'URL generato nella variabile
+                generatedUrl = url.toString();
+
+                // Aggiorna il link del bottone "Apri"
+                openLinkButton.href = generatedUrl;
+
+                // Mostra la sezione dei risultati
+                outputSection.style.display = 'block';
             });
 
             // Funzione per copiare l'URL
             copyButton.addEventListener('click', () => {
-                const urlToCopy = outputUrlInput.value;
-
-                if (!urlToCopy) {
+                if (!generatedUrl) {
                     alert("Prima elabora un link da copiare!");
                     return;
                 }
                 
-                // Usa l'API moderna del clipboard per la massima compatibilità
-                navigator.clipboard.writeText(urlToCopy).then(() => {
+                navigator.clipboard.writeText(generatedUrl).then(() => {
                     // Mostra il feedback di successo
                     copyFeedback.style.visibility = 'visible';
                     copyFeedback.style.opacity = '1';
@@ -206,7 +231,6 @@
                     // Nascondi il feedback dopo 2 secondi
                     setTimeout(() => {
                         copyFeedback.style.opacity = '0';
-                        // Attendi la fine della transizione prima di nasconderlo completamente
                         setTimeout(() => {
                            copyFeedback.style.visibility = 'hidden';
                         }, 500);
