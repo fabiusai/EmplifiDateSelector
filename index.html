@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emplifi editoriale - selezione date</title>
+    <title>Emplifi Link Generator</title>
     <link rel="icon" href="favicon.ico">
     <style>
         /* Import per icone */
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css');
         
         /* Reset e base */
         * {
@@ -18,8 +18,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            color: #212529;
+            background: #f0f2f5;
+            color: #333;
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
@@ -30,420 +30,364 @@
             margin: 0 auto;
             background: #ffffff;
             border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.07);
             overflow: hidden;
         }
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #f4e600 0%, #e6d000 100%);
+            background: linear-gradient(135deg, #1a5490 0%, #2c5aa0 100%);
             padding: 32px 40px;
             text-align: center;
-            position: relative;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
         }
 
         .header h1 {
-            color: #1a5490;
+            color: #ffffff;
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 8px;
-            position: relative;
         }
 
         .header .subtitle {
-            color: #2c5aa0;
+            color: #ffffff;
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 400;
             opacity: 0.9;
-            position: relative;
         }
 
         /* Sezione principale */
         .content-section {
-            padding: 40px;
+            padding: 30px 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
         }
 
         .section-title {
             color: #1a5490;
             font-size: 1.3rem;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 12px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        
+        .subsection-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
         }
 
-        .section-title i {
-            color: #f4e600;
-            font-size: 1.4rem;
+        /* Selezioni rapide date */
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
         }
 
-        /* Gruppo date */
-        .date-selection-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 32px;
-            transition: all 0.3s ease;
+        .btn-preset {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .date-selection-card:hover {
-            border-color: #f4e600;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(244, 230, 0, 0.15);
+        .btn-preset:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+            color: #212529;
         }
-
+        
         .date-picker-group {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .date-input {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
         }
 
         .date-input label {
             font-weight: 600;
             color: #1a5490;
             font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .date-input label i {
-            color: #f4e600;
-            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .date-input input[type="date"] {
-            padding: 14px 16px;
-            border: 2px solid #dee2e6;
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ced4da;
             border-radius: 8px;
             font-size: 1rem;
             font-family: inherit;
-            background: white;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .date-input input[type="date"]:focus {
             outline: none;
             border-color: #1a5490;
-            box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+            box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.15);
         }
 
-        .date-input input[type="date"]:hover {
-            border-color: #f4e600;
+        /* Filtro Parole Chiave */
+        .toggle-switch-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        /* Bottoni */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #28a745;
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .keyword-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        #keywordInput {
+            flex-grow: 1;
+            padding: 12px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        #keywordList {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #keywordList li {
+            display: flex;
+            align-items: center;
+            background-color: #e9ecef;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        .remove-keyword {
+            background: none;
+            border: none;
+            color: #6c757d;
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Bottoni Azione */
+        .actions-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding: 25px 0;
+            border-top: 1px solid #e9ecef;
+            margin-top: 20px;
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 14px 28px;
+            gap: 10px;
+            padding: 12px 25px;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
-            font-family: inherit;
-            text-decoration: none;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn i {
-            font-size: 1.1rem;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #1a5490 0%, #2c5aa0 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(26, 84, 144, 0.3);
         }
-
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(26, 84, 144, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
+            box-shadow: 0 6px 20px rgba(26, 84, 144, 0.3);
         }
 
         .btn-secondary {
             background: #f8f9fa;
             color: #1a5490;
-            border: 2px solid #1a5490;
+            border: 1px solid #ced4da;
         }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: #1a5490;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(26, 84, 144, 0.3);
+        .btn-secondary:hover {
+            background: #e9ecef;
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: #28a745;
             color: white;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
-        .btn-success:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-
-        .process-btn-container {
-            text-align: center;
-        }
-
-        /* Sezione risultati */
-        .results-section {
-            background: #f8f9fa;
-            border-top: 3px solid #f4e600;
-            padding: 40px;
-            margin-top: 32px;
-        }
-
-        .results-section.hidden {
+        /* Sezione Risultati */
+        #outputSection.hidden, #keywordInputs.hidden {
             display: none;
         }
-
+        
         .results-card {
-            background: white;
+            background: #f8f9fa;
             border-radius: 12px;
-            padding: 32px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            text-align: center;
         }
-
+        
         .button-group {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
+            gap: 15px;
         }
 
         /* Feedback */
         .feedback {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 20px; right: 20px;
             background: #28a745;
             color: white;
             padding: 16px 24px;
             border-radius: 8px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-            transform: translateX(300px);
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateX(120%);
+            transition: transform 0.4s ease-in-out;
             z-index: 1000;
         }
-
         .feedback.show {
             transform: translateX(0);
         }
-
-        .feedback i {
-            margin-right: 8px;
-        }
-
-        /* Animazioni loading */
-        .loading {
-            position: relative;
-        }
-
-        .loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* Responsive */
+        
         @media (max-width: 768px) {
-            .main-container {
-                margin: 0;
-                border-radius: 0;
-                min-height: 100vh;
-            }
-
-            .header {
-                padding: 24px 20px;
-            }
-
-            .header h1 {
-                font-size: 1.6rem;
-            }
-
-            .content-section {
-                padding: 24px 20px;
-            }
-
-            .date-selection-card {
-                padding: 24px 20px;
-            }
-
-            .date-picker-group {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .button-group {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .results-section {
-                padding: 24px 20px;
-            }
-
-            .results-card {
-                padding: 24px 20px;
-            }
+            body { padding: 0; }
+            .main-container { border-radius: 0; }
+            .content-section { padding: 20px; }
+            .button-group, .preset-buttons, .actions-container { flex-direction: column; width: 100%;}
+            .btn { width: 100%; }
         }
 
-        /* Accessibilità */
-        .btn:focus {
-            outline: 2px solid #f4e600;
-            outline-offset: 2px;
-        }
-
-        /* Animazioni sottili */
-        .date-selection-card,
-        .results-card {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <!-- Header -->
         <div class="header">
-            <h1><i class="fas fa-calendar-alt"></i> Emplifi Editoriale</h1>
-            <p class="subtitle">Strumento per la selezione e generazione di report personalizzati</p>
+            <h1><i class="fas fa-link"></i> Emplifi Link Generator</h1>
+            <p class="subtitle">Crea report personalizzati con filtri avanzati</p>
         </div>
 
-        <!-- Contenuto principale -->
         <div class="content-section">
-            <h2 class="section-title">
-                <i class="fas fa-date-range"></i>
-                Selezione Periodo di Analisi
-            </h2>
-
-            <div class="date-selection-card">
+            <!-- Sezione Date -->
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Periodo di Analisi</h2>
+                <h3 class="subsection-title">Selezione Rapida</h3>
+                <div class="preset-buttons">
+                    <button class="btn-preset" data-preset="today">Oggi</button>
+                    <button class="btn-preset" data-preset="last7">Ultimi 7 Giorni</button>
+                    <button class="btn-preset" data-preset="currentMonth">Mese Corrente</button>
+                    <button class="btn-preset" data-preset="prevMonth">Mese Precedente</button>
+                    <button class="btn-preset" data-preset="currentYear">Anno Corrente</button>
+                    <button class="btn-preset" data-preset="prevYear">Anno Precedente</button>
+                    <button class="btn-preset" data-preset="prevYearToday">Da Anno Precedente a Oggi</button>
+                </div>
+                <h3 class="subsection-title">Selezione Manuale</h3>
                 <div class="date-picker-group">
                     <div class="date-input">
-                        <label for="startDate">
-                            <i class="fas fa-play"></i>
-                            Data di Inizio
-                        </label>
+                        <label for="startDate">Data di Inizio</label>
                         <input type="date" id="startDate" required>
                     </div>
                     <div class="date-input">
-                        <label for="endDate">
-                            <i class="fas fa-stop"></i>
-                            Data di Fine
-                        </label>
+                        <label for="endDate">Data di Fine</label>
                         <input type="date" id="endDate" required>
                     </div>
                 </div>
+            </div>
 
-                <div class="process-btn-container">
-                    <button id="processButton" class="btn btn-primary">
-                        <i class="fas fa-cog"></i>
-                        <span class="btn-text">Elabora</span>
-                    </button>
+            <!-- Sezione Parole Chiave -->
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-tags"></i> Filtro per Parole Chiave (Opzionale)</h2>
+                <div class="toggle-switch-container">
+                    <label for="keywordToggle">Attiva filtro per parole chiave</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="keywordToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div id="keywordInputs" class="hidden">
+                    <div class="keyword-input-group">
+                        <input type="text" id="keywordInput" placeholder="Inserisci una parola chiave...">
+                        <button id="addKeywordButton" class="btn btn-secondary"><i class="fas fa-plus"></i> Aggiungi</button>
+                    </div>
+                    <ul id="keywordList"></ul>
                 </div>
             </div>
-        </div>
 
-        <!-- Sezione risultati -->
-        <div class="results-section hidden" id="outputSection">
-            <h2 class="section-title">
-                <i class="fas fa-chart-line"></i>
-                Link Generato
-            </h2>
-            
-            <div class="results-card">
-                <div class="button-group">
-                    <a href="#" id="openLinkButton" target="_blank" class="btn btn-success">
-                        <i class="fas fa-external-link-alt"></i>
-                        <span class="btn-text">Visualizza Report</span>
-                    </a>
-                    <button id="copyButton" class="btn btn-secondary">
-                        <i class="fas fa-copy"></i>
-                        <span class="btn-text">Copia URL</span>
-                    </button>
+            <!-- Azioni -->
+            <div class="actions-container">
+                <button id="processButton" class="btn btn-primary"><i class="fas fa-cog"></i> Elabora Link</button>
+                <button id="exportButton" class="btn btn-secondary"><i class="fas fa-file-export"></i> Esporta Ricerca</button>
+                <label for="importFile" class="btn btn-secondary"><i class="fas fa-file-import"></i> Importa Ricerca</label>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+
+            <!-- Risultati -->
+            <div id="outputSection" class="hidden">
+                <h2 class="section-title"><i class="fas fa-check-circle"></i> Link Generato</h2>
+                <div class="results-card">
+                    <div class="button-group">
+                        <a href="#" id="openLinkButton" target="_blank" class="btn btn-success"><i class="fas fa-external-link-alt"></i> Visualizza Report</a>
+                        <button id="copyButton" class="btn btn-secondary"><i class="fas fa-copy"></i> Copia URL</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Feedback toast -->
-    <div class="feedback" id="feedback">
-        <i class="fas fa-check-circle"></i>
-        <span id="feedbackText">URL copiato con successo!</span>
-    </div>
+    
+    <div class="feedback" id="feedback"><span id="feedbackText"></span></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const baseUrl = 'https://app.emplifi.io/307036/content/feed?date=%7B%22startDate%22%3A%222025-07-16%22%2C%22endDate%22%3A%222025-07-16%22%7D&filter=%5B%7B%22type%22%3A%22PROFILE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22facebook-115066385228297%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-55933404846%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-167618226659138%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841404664900795%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841401517098538%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22linkedin-urn%3Ali%3Aorganization%3A7046%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22twitter-388197163%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22youtube-UCn4BzT_EeCOUUyF6GJrsQxA%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22DATA_GROUP%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22WITH_INSIGHTS%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22ORIGIN%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22OUTGOING%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22PUBLISHED_STATUS%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22PUBLISHED%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22type%22%3A%22CONTENT_TYPE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22POSTS%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22STORIES%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%2C%7B%22operator%22%3A%22AND%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22c9d62b17be3049459e1fe071beccbfa0%22%2C%22excluded%22%3Atrue%7D%5D%2C%22type%22%3A%22POST_LABEL%22%7D%5D&display=table&sort=%7B%22by%22%3A%22createdTime%22%2C%22order%22%3A%22desc%22%7D&tablePreset=60b353e2ce09d1000f74e427';
-            
-            // Riferimenti agli elementi
+            // Riferimenti agli elementi DOM
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
             const processButton = document.getElementById('processButton');
@@ -452,127 +396,220 @@
             const copyButton = document.getElementById('copyButton');
             const feedback = document.getElementById('feedback');
             const feedbackText = document.getElementById('feedbackText');
+            const presetButtons = document.querySelectorAll('.btn-preset');
+            const keywordToggle = document.getElementById('keywordToggle');
+            const keywordInputs = document.getElementById('keywordInputs');
+            const keywordInput = document.getElementById('keywordInput');
+            const addKeywordButton = document.getElementById('addKeywordButton');
+            const keywordList = document.getElementById('keywordList');
+            const exportButton = document.getElementById('exportButton');
+            const importFile = document.getElementById('importFile');
             
+            let searchConfig = {
+                keywords: []
+            };
             let generatedUrl = '';
 
-            // Imposta date di default
-            const today = new Date().toISOString().split('T')[0];
-            startDateInput.value = today;
-            endDateInput.value = today;
+            const baseUrl = 'https://app.emplifi.io/307036/content/feed/?date=%7B%22movingDaterange%22%3A%22last-month%22%7D&filter=%5B%7B%22operator%22%3A%22AND%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22c9d62b17be3049459e1fe071beccbfa0%22%2C%22excluded%22%3Atrue%7D%5D%2C%22type%22%3A%22POST_LABEL%22%7D%2C%7B%22operator%22%3A%22OR%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22OUTGOING%22%2C%22excluded%22%3Afalse%7D%5D%2C%22type%22%3A%22ORIGIN%22%7D%2C%7B%22operator%22%3A%22OR%22%2C%22type%22%3A%22PROFILE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22linkedin-urn%3Ali%3Aorganization%3A7046%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841404664900795%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22youtube-UCn4BzT_EeCOUUyF6GJrsQxA%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22twitter-388197163%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-115066385228297%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-55933404846%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-167618226659138%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841401517098538%22%2C%22excluded%22%3Afalse%7D%5D%7D%2C%7B%22operator%22%3A%22OR%22%2C%22type%22%3A%22CONTENT_TYPE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22POSTS%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22STORIES%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22SHARES%22%2C%22excluded%22%3Afalse%7D%5D%7D%2C%7B%22type%22%3A%22PUBLISHED_STATUS%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22PUBLISHED%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%5D&sort=%7B%22by%22%3A%22score%22%2C%22order%22%3A%22desc%22%7D&display=stream';
+
+            // Funzione per formattare la data in YYYY-MM-DD
+            const formatDate = (date) => date.toISOString().split('T')[0];
+
+            // Funzione per impostare le date
+            const setDates = (preset) => {
+                const today = new Date();
+                let start = new Date();
+                let end = new Date();
+
+                switch (preset) {
+                    case 'today':
+                        start = today;
+                        end = today;
+                        break;
+                    case 'last7':
+                        start.setDate(today.getDate() - 6);
+                        end = today;
+                        break;
+                    case 'currentMonth':
+                        start = new Date(today.getFullYear(), today.getMonth(), 2);
+                        end = today;
+                        break;
+                    case 'prevMonth':
+                        start = new Date(today.getFullYear(), today.getMonth() - 1, 2);
+                        end = new Date(today.getFullYear(), today.getMonth(), 1);
+                        break;
+                    case 'currentYear':
+                        start = new Date(today.getFullYear(), 0, 2);
+                        end = today;
+                        break;
+                    case 'prevYear':
+                        start = new Date(today.getFullYear() - 1, 0, 2);
+                        end = new Date(today.getFullYear(), 0, 1);
+                        break;
+                    case 'prevYearToday':
+                         start = new Date(today.getFullYear() - 1, 0, 2);
+                         end = today;
+                         break;
+                }
+                startDateInput.value = formatDate(start);
+                endDateInput.value = formatDate(end);
+            };
+            
+            // Imposta la data odierna di default
+            setDates('today');
+
+            // Listeners per i bottoni di selezione rapida
+            presetButtons.forEach(button => {
+                button.addEventListener('click', () => setDates(button.dataset.preset));
+            });
+
+            // Gestione parole chiave
+            keywordToggle.addEventListener('change', () => {
+                keywordInputs.classList.toggle('hidden', !keywordToggle.checked);
+                if (!keywordToggle.checked) {
+                    searchConfig.keywords = [];
+                    renderKeywords();
+                }
+            });
+
+            const renderKeywords = () => {
+                keywordList.innerHTML = '';
+                searchConfig.keywords.forEach((kw, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${kw} <button class="remove-keyword" data-index="${index}">&times;</button>`;
+                    keywordList.appendChild(li);
+                });
+            };
+
+            addKeywordButton.addEventListener('click', () => {
+                const keyword = keywordInput.value.trim();
+                if (keyword && !searchConfig.keywords.includes(keyword)) {
+                    searchConfig.keywords.push(keyword);
+                    renderKeywords();
+                }
+                keywordInput.value = '';
+                keywordInput.focus();
+            });
+            
+            keywordInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addKeywordButton.click();
+                }
+            });
+
+            keywordList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-keyword')) {
+                    const index = parseInt(e.target.dataset.index, 10);
+                    searchConfig.keywords.splice(index, 1);
+                    renderKeywords();
+                }
+            });
 
             // Funzione per mostrare feedback
-            function showFeedback(message, type = 'success') {
+            const showFeedback = (message) => {
                 feedbackText.textContent = message;
-                if (type === 'success') {
-                    feedback.style.background = '#28a745';
-                    feedback.querySelector('i').className = 'fas fa-check-circle';
-                } else {
-                    feedback.style.background = '#dc3545';
-                    feedback.querySelector('i').className = 'fas fa-exclamation-circle';
-                }
                 feedback.classList.add('show');
-                setTimeout(() => {
-                    feedback.classList.remove('show');
-                }, 3000);
-            }
-
-            // Funzione per aggiornare testo bottone
-            function updateButtonText(button, text, icon = null) {
-                const textElement = button.querySelector('.btn-text');
-                const iconElement = button.querySelector('i');
-                textElement.textContent = text;
-                if (icon) {
-                    iconElement.className = icon;
-                }
-            }
-
-            // Elaborazione
+                setTimeout(() => feedback.classList.remove('show'), 3000);
+            };
+            
+            // Elaborazione URL
             processButton.addEventListener('click', () => {
                 const startDate = startDateInput.value;
                 const endDate = endDateInput.value;
 
-                if (!startDate || !endDate) {
-                    showFeedback('Seleziona entrambe le date per continuare', 'error');
+                if (!startDate || !endDate || new Date(startDate) > new Date(endDate)) {
+                    showFeedback('Per favore, seleziona un intervallo di date valido.');
                     return;
                 }
 
-                if (new Date(startDate) > new Date(endDate)) {
-                    showFeedback('La data di inizio deve essere precedente alla data di fine', 'error');
-                    return;
-                }
-
-                // Animazione caricamento
-                processButton.disabled = true;
-                processButton.classList.add('loading');
-                updateButtonText(processButton, 'Elaborazione in corso...');
-
-                // Simula elaborazione
-                setTimeout(() => {
+                try {
                     const url = new URL(baseUrl);
-                    const dateParam = url.searchParams.get('date');
-                    const dateObject = JSON.parse(dateParam);
+                    let params = new URLSearchParams(url.search);
+
+                    // Gestione date
+                    let dateObj = { "startDate": startDate, "endDate": endDate };
+                    params.set('date', JSON.stringify(dateObj));
+
+                    // Gestione filtri (parole chiave)
+                    let filterArray = JSON.parse(decodeURIComponent(params.get('filter') || '[]'));
                     
-                    dateObject.startDate = startDate;
-                    dateObject.endDate = endDate;
+                    // Rimuovi filtri FULLTEXT esistenti per evitare duplicati
+                    filterArray = filterArray.filter(f => f.type !== 'FULLTEXT');
+
+                    if (keywordToggle.checked && searchConfig.keywords.length > 0) {
+                        const keywordFilter = {
+                            operator: "OR",
+                            type: "FULLTEXT",
+                            tags: searchConfig.keywords.map(kw => ({ id: `fulltext${kw.trim()}`, excluded: false }))
+                        };
+                        filterArray.push(keywordFilter);
+                    }
+                    params.set('filter', JSON.stringify(filterArray));
                     
-                    const newDateJSON = JSON.stringify(dateObject);
-                    url.searchParams.set('date', newDateJSON);
-                    
-                    generatedUrl = url.toString();
+                    generatedUrl = `${url.origin}${url.pathname}?${decodeURIComponent(params.toString())}`;
                     openLinkButton.href = generatedUrl;
 
-                    // Ripristina bottone
-                    processButton.disabled = false;
-                    processButton.classList.remove('loading');
-                    updateButtonText(processButton, 'Report Elaborato!', 'fas fa-check');
-                    
-                    // Mostra risultati
                     outputSection.classList.remove('hidden');
-                    outputSection.scrollIntoView({ behavior: 'smooth' });
-                    
-                    showFeedback('Report elaborato con successo!');
-
-                    // Ripristina bottone dopo 3 secondi
-                    setTimeout(() => {
-                        updateButtonText(processButton, 'Elabora Report', 'fas fa-cog');
-                    }, 3000);
-                }, 2000);
+                    showFeedback('Link generato con successo!');
+                } catch (error) {
+                    console.error("Errore durante la generazione dell'URL:", error);
+                    showFeedback("Si è verificato un errore.");
+                }
             });
 
             // Copia URL
             copyButton.addEventListener('click', () => {
-                if (!generatedUrl) {
-                    showFeedback('Elabora prima un report da copiare', 'error');
-                    return;
-                }
-                
-                copyButton.disabled = true;
-                updateButtonText(copyButton, 'Copiando...');
-                
+                if (!generatedUrl) return;
                 navigator.clipboard.writeText(generatedUrl).then(() => {
-                    updateButtonText(copyButton, 'Copiato!', 'fas fa-check');
                     showFeedback('URL copiato negli appunti!');
-                    
-                    setTimeout(() => {
-                        copyButton.disabled = false;
-                        updateButtonText(copyButton, 'Copia URL', 'fas fa-copy');
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Errore durante la copia: ', err);
-                    copyButton.disabled = false;
-                    updateButtonText(copyButton, 'Copia URL', 'fas fa-copy');
-                    showFeedback('Errore durante la copia dell\'URL', 'error');
-                });
+                }).catch(err => console.error('Errore copia: ', err));
             });
 
-            // Gestione apertura link
-            openLinkButton.addEventListener('click', () => {
-                updateButtonText(openLinkButton, 'Aprendo...', 'fas fa-spinner fa-spin');
-                setTimeout(() => {
-                    updateButtonText(openLinkButton, 'Visualizza Report', 'fas fa-external-link-alt');
-                }, 1000);
+            // Esporta/Importa
+            exportButton.addEventListener('click', () => {
+                searchConfig.startDate = startDateInput.value;
+                searchConfig.endDate = endDateInput.value;
+                searchConfig.keywordsEnabled = keywordToggle.checked;
+
+                const dataStr = JSON.stringify(searchConfig, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ricerca_emplifi_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showFeedback('Ricerca esportata!');
+            });
+
+            importFile.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedConfig = JSON.parse(e.target.result);
+                        startDateInput.value = importedConfig.startDate || formatDate(new Date());
+                        endDateInput.value = importedConfig.endDate || formatDate(new Date());
+                        keywordToggle.checked = importedConfig.keywordsEnabled || false;
+                        keywordInputs.classList.toggle('hidden', !keywordToggle.checked);
+                        searchConfig.keywords = importedConfig.keywords || [];
+                        renderKeywords();
+                        showFeedback('Ricerca importata con successo!');
+                    } catch (err) {
+                        showFeedback('Errore nel leggere il file JSON.');
+                    }
+                };
+                reader.readAsText(file);
+                importFile.value = ''; // Permette di ricaricare lo stesso file
             });
         });
     </script>
 </body>
 </html>
+
+
