@@ -258,6 +258,15 @@
         .btn-secondary:hover {
             background: #e9ecef;
         }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: 1px solid #dc3545;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
 
         .btn-success {
             background: #28a745;
@@ -365,9 +374,10 @@
             <!-- Azioni -->
             <div class="actions-container">
                 <button id="processButton" class="btn btn-primary"><i class="fas fa-cog"></i> Elabora Link</button>
-                <button id="exportButton" class="btn btn-secondary"><i class="fas fa-file-export"></i> Esporta Ricerca</button>
-                <label for="importFile" class="btn btn-secondary"><i class="fas fa-file-import"></i> Importa Ricerca</label>
+                <button id="exportButton" class="btn btn-secondary"><i class="fas fa-file-export"></i> Esporta</button>
+                <label for="importFile" class="btn btn-secondary"><i class="fas fa-file-import"></i> Importa</label>
                 <input type="file" id="importFile" accept=".json" style="display: none;">
+                <button id="resetButton" class="btn btn-danger"><i class="fas fa-undo"></i> Reset</button>
             </div>
 
             <!-- Risultati -->
@@ -404,6 +414,7 @@
             const keywordList = document.getElementById('keywordList');
             const exportButton = document.getElementById('exportButton');
             const importFile = document.getElementById('importFile');
+            const resetButton = document.getElementById('resetButton');
             
             let searchConfig = {
                 keywords: []
@@ -454,9 +465,36 @@
                 startDateInput.value = formatDate(start);
                 endDateInput.value = formatDate(end);
             };
-            
-            // Imposta la data odierna di default
-            setDates('today');
+
+            const showFeedback = (message) => {
+                feedbackText.textContent = message;
+                feedback.classList.add('show');
+                setTimeout(() => feedback.classList.remove('show'), 3000);
+            };
+
+            const renderKeywords = () => {
+                keywordList.innerHTML = '';
+                searchConfig.keywords.forEach((kw, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${kw} <button class="remove-keyword" data-index="${index}">&times;</button>`;
+                    keywordList.appendChild(li);
+                });
+            };
+
+            const resetApp = () => {
+                setDates('today');
+                keywordToggle.checked = false;
+                keywordInputs.classList.add('hidden');
+                searchConfig.keywords = [];
+                renderKeywords();
+                outputSection.classList.add('hidden');
+                generatedUrl = '';
+                importFile.value = ''; // Resetta anche il campo di input file
+                showFeedback('Applicazione resettata.');
+            };
+
+            // Inizializzazione
+            resetApp(); // Usiamo resetApp per l'inizializzazione
 
             // Listeners per i bottoni di selezione rapida
             presetButtons.forEach(button => {
@@ -472,17 +510,9 @@
                 }
             });
 
-            const renderKeywords = () => {
-                keywordList.innerHTML = '';
-                searchConfig.keywords.forEach((kw, index) => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `${kw} <button class="remove-keyword" data-index="${index}">&times;</button>`;
-                    keywordList.appendChild(li);
-                });
-            };
-
             addKeywordButton.addEventListener('click', () => {
-                const keyword = keywordInput.value.trim();
+                // Sanitizza l'input per rimuovere caratteri non validi e spazi extra
+                const keyword = keywordInput.value.trim().replace(/[^a-zA-Z0-9\s]/g, '');
                 if (keyword && !searchConfig.keywords.includes(keyword)) {
                     searchConfig.keywords.push(keyword);
                     renderKeywords();
@@ -506,13 +536,6 @@
                 }
             });
 
-            // Funzione per mostrare feedback
-            const showFeedback = (message) => {
-                feedbackText.textContent = message;
-                feedback.classList.add('show');
-                setTimeout(() => feedback.classList.remove('show'), 3000);
-            };
-            
             // Elaborazione URL
             processButton.addEventListener('click', () => {
                 const startDate = startDateInput.value;
@@ -541,7 +564,7 @@
                         const keywordFilter = {
                             operator: "OR",
                             type: "FULLTEXT",
-                            tags: searchConfig.keywords.map(kw => ({ id: `fulltext${kw.trim()}`, excluded: false }))
+                            tags: searchConfig.keywords.map(kw => ({ id: `fulltext${kw.trim().replace(/\s/g, '')}`, excluded: false }))
                         };
                         filterArray.push(keywordFilter);
                     }
@@ -576,8 +599,8 @@
                 const dataBlob = new Blob([dataStr], {type: 'application/json'});
                 const url = URL.createObjectURL(dataBlob);
                 const a = document.createElement('a');
-                a.href = url;
                 a.download = `ricerca_emplifi_${new Date().toISOString().split('T')[0]}.json`;
+                a.href = url;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -607,9 +630,11 @@
                 reader.readAsText(file);
                 importFile.value = ''; // Permette di ricaricare lo stesso file
             });
+
+            // Listener per il bottone di reset
+            resetButton.addEventListener('click', resetApp);
         });
     </script>
 </body>
 </html>
-
 
