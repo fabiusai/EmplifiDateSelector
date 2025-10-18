@@ -138,7 +138,7 @@
             box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.15);
         }
 
-        /* Filtro Parole Chiave */
+        /* Filtro Parole Chiave & Ordinamento */
         .toggle-switch-container {
             display: flex;
             align-items: center;
@@ -186,23 +186,31 @@
             gap: 10px;
             margin-bottom: 15px;
         }
-        #keywordInput {
+        .keyword-input-group input {
             flex-grow: 1;
             padding: 12px 14px;
             border: 1px solid #ced4da;
             border-radius: 8px;
             font-size: 1rem;
         }
-        #keywordList {
+        #includeKeywordList, #excludeKeywordList {
             list-style: none;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            min-height: 38px;
         }
-        #keywordList li {
+        #includeKeywordList li {
+            background-color: #e0eaff;
+            color: #004085;
+        }
+        #excludeKeywordList li {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        #includeKeywordList li, #excludeKeywordList li {
             display: flex;
             align-items: center;
-            background-color: #e9ecef;
             padding: 5px 12px;
             border-radius: 15px;
             font-size: 0.9rem;
@@ -210,10 +218,10 @@
         .remove-keyword {
             background: none;
             border: none;
-            color: #6c757d;
             margin-left: 8px;
             cursor: pointer;
             font-size: 1rem;
+            color: inherit;
         }
 
         /* Bottoni Azione */
@@ -352,22 +360,29 @@
                 </div>
             </div>
 
-            <!-- Sezione Parole Chiave -->
+            <!-- Sezione Filtri -->
             <div class="section">
-                <h2 class="section-title"><i class="fas fa-tags"></i> Filtro per Parole Chiave (Opzionale)</h2>
-                <div class="toggle-switch-container">
-                    <label for="keywordToggle">Attiva filtro per parole chiave</label>
+                <h2 class="section-title"><i class="fas fa-filter"></i> Filtri e Ordinamento</h2>
+                <div class="subsection-title">Parole da includere (almeno una)</div>
+                 <div class="keyword-input-group">
+                    <input type="text" id="includeKeywordInput" placeholder="Includi parola...">
+                    <button id="addIncludeKeywordButton" class="btn btn-secondary"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul id="includeKeywordList"></ul>
+
+                <div class="subsection-title" style="margin-top: 20px;">Parole da escludere (nessuna)</div>
+                 <div class="keyword-input-group">
+                    <input type="text" id="excludeKeywordInput" placeholder="Escludi parola...">
+                    <button id="addExcludeKeywordButton" class="btn btn-secondary"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul id="excludeKeywordList"></ul>
+                
+                <div class="toggle-switch-container" style="margin-top: 20px;">
+                    <label for="sortOrderToggle">Ordina dal più vecchio al più nuovo</label>
                     <label class="toggle-switch">
-                        <input type="checkbox" id="keywordToggle">
+                        <input type="checkbox" id="sortOrderToggle">
                         <span class="slider"></span>
                     </label>
-                </div>
-                <div id="keywordInputs" class="hidden">
-                    <div class="keyword-input-group">
-                        <input type="text" id="keywordInput" placeholder="Inserisci una parola chiave...">
-                        <button id="addKeywordButton" class="btn btn-secondary"><i class="fas fa-plus"></i> Aggiungi</button>
-                    </div>
-                    <ul id="keywordList"></ul>
                 </div>
             </div>
 
@@ -397,7 +412,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Riferimenti agli elementi DOM
+            // Riferimenti DOM
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
             const processButton = document.getElementById('processButton');
@@ -407,60 +422,39 @@
             const feedback = document.getElementById('feedback');
             const feedbackText = document.getElementById('feedbackText');
             const presetButtons = document.querySelectorAll('.btn-preset');
-            const keywordToggle = document.getElementById('keywordToggle');
-            const keywordInputs = document.getElementById('keywordInputs');
-            const keywordInput = document.getElementById('keywordInput');
-            const addKeywordButton = document.getElementById('addKeywordButton');
-            const keywordList = document.getElementById('keywordList');
+            const includeKeywordInput = document.getElementById('includeKeywordInput');
+            const addIncludeKeywordButton = document.getElementById('addIncludeKeywordButton');
+            const includeKeywordList = document.getElementById('includeKeywordList');
+            const excludeKeywordInput = document.getElementById('excludeKeywordInput');
+            const addExcludeKeywordButton = document.getElementById('addExcludeKeywordButton');
+            const excludeKeywordList = document.getElementById('excludeKeywordList');
+            const sortOrderToggle = document.getElementById('sortOrderToggle');
             const exportButton = document.getElementById('exportButton');
             const importFile = document.getElementById('importFile');
             const resetButton = document.getElementById('resetButton');
             
             let searchConfig = {
-                keywords: []
+                includeKeywords: [],
+                excludeKeywords: [],
+                sortAsc: false
             };
             let generatedUrl = '';
 
-            const baseUrl = 'https://app.emplifi.io/307036/content/feed/?date=%7B%22movingDaterange%22%3A%22last-month%22%7D&filter=%5B%7B%22operator%22%3A%22AND%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22c9d62b17be3049459e1fe071beccbfa0%22%2C%22excluded%22%3Atrue%7D%5D%2C%22type%22%3A%22POST_LABEL%22%7D%2C%7B%22operator%22%3A%22OR%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22OUTGOING%22%2C%22excluded%22%3Afalse%7D%5D%2C%22type%22%3A%22ORIGIN%22%7D%2C%7B%22operator%22%3A%22OR%22%2C%22type%22%3A%22PROFILE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22linkedin-urn%3Ali%3Aorganization%3A7046%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841404664900795%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22youtube-UCn4BzT_EeCOUUyF6GJrsQxA%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22twitter-388197163%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-115066385228297%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-55933404846%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22facebook-167618226659138%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22instagram-17841401517098538%22%2C%22excluded%22%3Afalse%7D%5D%7D%2C%7B%22operator%22%3A%22OR%22%2C%22type%22%3A%22CONTENT_TYPE%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22POSTS%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22STORIES%22%2C%22excluded%22%3Afalse%7D%2C%7B%22id%22%3A%22SHARES%22%2C%22excluded%22%3Afalse%7D%5D%7D%2C%7B%22type%22%3A%22PUBLISHED_STATUS%22%2C%22tags%22%3A%5B%7B%22id%22%3A%22PUBLISHED%22%2C%22excluded%22%3Afalse%7D%5D%2C%22operator%22%3A%22OR%22%7D%5D&sort=%7B%22by%22%3A%22score%22%2C%22order%22%3A%22desc%22%7D&display=stream';
+            const cleanBaseUrl = 'https://app.emplifi.io/307036/content/feed/';
+            const baseFilter = [{"operator":"AND","tags":[{"id":"c9d62b17be3049459e1fe071beccbfa0","excluded":true}],"type":"POST_LABEL"},{"operator":"OR","tags":[{"id":"OUTGOING","excluded":false}],"type":"ORIGIN"},{"operator":"OR","type":"PROFILE","tags":[{"id":"linkedin-urn:li:organization:7046","excluded":false},{"id":"instagram-17841404664900795","excluded":false},{"id":"youtube-UCn4BzT_EeCOUUyF6GJrsQxA","excluded":false},{"id":"twitter-388197163","excluded":false},{"id":"facebook-115066385228297","excluded":false},{"id":"facebook-55933404846","excluded":false},{"id":"facebook-167618226659138","excluded":false},{"id":"instagram-17841401517098538","excluded":false}]},{"operator":"OR","type":"CONTENT_TYPE","tags":[{"id":"POSTS","excluded":false},{"id":"STORIES","excluded":false},{"id":"SHARES","excluded":false}]},{"type":"PUBLISHED_STATUS","tags":[{"id":"PUBLISHED","excluded":false}],"operator":"OR"}];
 
-            // Funzione per formattare la data in YYYY-MM-DD
             const formatDate = (date) => date.toISOString().split('T')[0];
 
-            // Funzione per impostare le date
             const setDates = (preset) => {
-                const today = new Date();
-                let start = new Date();
-                let end = new Date();
-
+                const today = new Date(); let start = new Date(); let end = new Date();
                 switch (preset) {
-                    case 'today':
-                        start = today;
-                        end = today;
-                        break;
-                    case 'last7':
-                        start.setDate(today.getDate() - 6);
-                        end = today;
-                        break;
-                    case 'currentMonth':
-                        start = new Date(today.getFullYear(), today.getMonth(), 2);
-                        end = today;
-                        break;
-                    case 'prevMonth':
-                        start = new Date(today.getFullYear(), today.getMonth() - 1, 2);
-                        end = new Date(today.getFullYear(), today.getMonth(), 1);
-                        break;
-                    case 'currentYear':
-                        start = new Date(today.getFullYear(), 0, 2);
-                        end = today;
-                        break;
-                    case 'prevYear':
-                        start = new Date(today.getFullYear() - 1, 0, 2);
-                        end = new Date(today.getFullYear(), 0, 1);
-                        break;
-                    case 'prevYearToday':
-                         start = new Date(today.getFullYear() - 1, 0, 2);
-                         end = today;
-                         break;
+                    case 'today': start = today; end = today; break;
+                    case 'last7': start.setDate(today.getDate() - 6); end = today; break;
+                    case 'currentMonth': start = new Date(today.getFullYear(), today.getMonth(), 2); end = today; break;
+                    case 'prevMonth': start = new Date(today.getFullYear(), today.getMonth() - 1, 2); end = new Date(today.getFullYear(), today.getMonth(), 1); break;
+                    case 'currentYear': start = new Date(today.getFullYear(), 0, 2); end = today; break;
+                    case 'prevYear': start = new Date(today.getFullYear() - 1, 0, 2); end = new Date(today.getFullYear(), 0, 1); break;
+                    case 'prevYearToday': start = new Date(today.getFullYear() - 1, 0, 2); end = today; break;
                 }
                 startDateInput.value = formatDate(start);
                 endDateInput.value = formatDate(end);
@@ -473,154 +467,142 @@
             };
 
             const renderKeywords = () => {
-                keywordList.innerHTML = '';
-                searchConfig.keywords.forEach((kw, index) => {
+                includeKeywordList.innerHTML = '';
+                searchConfig.includeKeywords.forEach((kw, index) => {
                     const li = document.createElement('li');
-                    li.innerHTML = `${kw} <button class="remove-keyword" data-index="${index}">&times;</button>`;
-                    keywordList.appendChild(li);
+                    li.innerHTML = `${kw} <button class="remove-keyword" data-list="include" data-index="${index}">&times;</button>`;
+                    includeKeywordList.appendChild(li);
+                });
+                excludeKeywordList.innerHTML = '';
+                searchConfig.excludeKeywords.forEach((kw, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${kw} <button class="remove-keyword" data-list="exclude" data-index="${index}">&times;</button>`;
+                    excludeKeywordList.appendChild(li);
                 });
             };
 
-            const resetApp = () => {
+            const initializeApp = () => {
                 setDates('today');
-                keywordToggle.checked = false;
-                keywordInputs.classList.add('hidden');
-                searchConfig.keywords = [];
+                searchConfig = { includeKeywords: [], excludeKeywords: [], sortAsc: false };
+                sortOrderToggle.checked = false;
                 renderKeywords();
                 outputSection.classList.add('hidden');
                 generatedUrl = '';
-                importFile.value = ''; // Resetta anche il campo di input file
-                showFeedback('Applicazione resettata.');
+                importFile.value = '';
             };
 
-            // Inizializzazione
-            resetApp(); // Usiamo resetApp per l'inizializzazione
+            initializeApp();
 
-            // Listeners per i bottoni di selezione rapida
-            presetButtons.forEach(button => {
-                button.addEventListener('click', () => setDates(button.dataset.preset));
-            });
+            presetButtons.forEach(button => button.addEventListener('click', () => setDates(button.dataset.preset)));
 
-            // Gestione parole chiave
-            keywordToggle.addEventListener('change', () => {
-                keywordInputs.classList.toggle('hidden', !keywordToggle.checked);
-                if (!keywordToggle.checked) {
-                    searchConfig.keywords = [];
-                    renderKeywords();
-                }
-            });
+            function setupKeywordInput(inputElement, addButton, keywordArray) {
+                const addKeyword = () => {
+                    const keyword = inputElement.value.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+                    if (keyword && !keywordArray.includes(keyword)) {
+                        keywordArray.push(keyword);
+                        renderKeywords();
+                    }
+                    inputElement.value = '';
+                    inputElement.focus();
+                };
+                addButton.addEventListener('click', addKeyword);
+                inputElement.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addKeyword();
+                    }
+                });
+            }
 
-            addKeywordButton.addEventListener('click', () => {
-                // Sanitizza l'input per rimuovere caratteri non validi e spazi extra
-                const keyword = keywordInput.value.trim().replace(/[^a-zA-Z0-9\s]/g, '');
-                if (keyword && !searchConfig.keywords.includes(keyword)) {
-                    searchConfig.keywords.push(keyword);
-                    renderKeywords();
-                }
-                keywordInput.value = '';
-                keywordInput.focus();
-            });
-            
-            keywordInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addKeywordButton.click();
-                }
-            });
+            setupKeywordInput(includeKeywordInput, addIncludeKeywordButton, searchConfig.includeKeywords);
+            setupKeywordInput(excludeKeywordInput, addExcludeKeywordButton, searchConfig.excludeKeywords);
 
-            keywordList.addEventListener('click', (e) => {
+            document.body.addEventListener('click', (e) => {
                 if (e.target.classList.contains('remove-keyword')) {
+                    const list = e.target.dataset.list;
                     const index = parseInt(e.target.dataset.index, 10);
-                    searchConfig.keywords.splice(index, 1);
+                    if (list === 'include') {
+                        searchConfig.includeKeywords.splice(index, 1);
+                    } else {
+                        searchConfig.excludeKeywords.splice(index, 1);
+                    }
                     renderKeywords();
                 }
             });
 
-            // Elaborazione URL
             processButton.addEventListener('click', () => {
-                const startDate = startDateInput.value;
-                const endDate = endDateInput.value;
-
-                if (!startDate || !endDate || new Date(startDate) > new Date(endDate)) {
+                if (!startDateInput.value || !endDateInput.value || new Date(startDateInput.value) > new Date(endDateInput.value)) {
                     showFeedback('Per favore, seleziona un intervallo di date valido.');
                     return;
                 }
-
                 try {
-                    const url = new URL(baseUrl);
-                    let params = new URLSearchParams(url.search);
-
-                    // Gestione date
-                    let dateObj = { "startDate": startDate, "endDate": endDate };
-                    params.set('date', JSON.stringify(dateObj));
-
-                    // Gestione filtri (parole chiave)
-                    let filterArray = JSON.parse(decodeURIComponent(params.get('filter') || '[]'));
+                    const params = new URLSearchParams();
+                    params.set('date', JSON.stringify({ "startDate": startDateInput.value, "endDate": endDateInput.value }));
                     
-                    // Rimuovi filtri FULLTEXT esistenti per evitare duplicati
-                    filterArray = filterArray.filter(f => f.type !== 'FULLTEXT');
+                    let finalFilter = [...baseFilter];
+                    
+                    const includedTags = searchConfig.includeKeywords.map(kw => ({ id: `fulltext${kw.trim().replace(/\s/g, '')}`, excluded: false }));
+                    const excludedTags = searchConfig.excludeKeywords.map(kw => ({ id: `fulltext${kw.trim().replace(/\s/g, '')}`, excluded: true }));
+                    const allKeywordTags = [...includedTags, ...excludedTags];
 
-                    if (keywordToggle.checked && searchConfig.keywords.length > 0) {
-                        const keywordFilter = {
-                            operator: "OR",
+                    if (allKeywordTags.length > 0) {
+                        finalFilter.push({
+                            operator: "AND",
                             type: "FULLTEXT",
-                            tags: searchConfig.keywords.map(kw => ({ id: `fulltext${kw.trim().replace(/\s/g, '')}`, excluded: false }))
-                        };
-                        filterArray.push(keywordFilter);
+                            tags: allKeywordTags
+                        });
                     }
-                    params.set('filter', JSON.stringify(filterArray));
                     
-                    generatedUrl = `${url.origin}${url.pathname}?${decodeURIComponent(params.toString())}`;
+                    params.set('filter', JSON.stringify(finalFilter));
+
+                    const sortObj = { by: "createdTime", order: sortOrderToggle.checked ? "asc" : "desc" };
+                    params.set('sort', JSON.stringify(sortObj));
+                    params.set('display', 'stream');
+                    
+                    generatedUrl = `${cleanBaseUrl}?${decodeURIComponent(params.toString())}`;
                     openLinkButton.href = generatedUrl;
 
                     outputSection.classList.remove('hidden');
                     showFeedback('Link generato con successo!');
                 } catch (error) {
-                    console.error("Errore durante la generazione dell'URL:", error);
+                    console.error("Errore generazione URL:", error);
                     showFeedback("Si è verificato un errore.");
                 }
             });
 
-            // Copia URL
             copyButton.addEventListener('click', () => {
                 if (!generatedUrl) return;
-                navigator.clipboard.writeText(generatedUrl).then(() => {
-                    showFeedback('URL copiato negli appunti!');
-                }).catch(err => console.error('Errore copia: ', err));
+                navigator.clipboard.writeText(generatedUrl).then(() => showFeedback('URL copiato!'));
             });
 
-            // Esporta/Importa
             exportButton.addEventListener('click', () => {
-                searchConfig.startDate = startDateInput.value;
-                searchConfig.endDate = endDateInput.value;
-                searchConfig.keywordsEnabled = keywordToggle.checked;
-
-                const dataStr = JSON.stringify(searchConfig, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                const url = URL.createObjectURL(dataBlob);
+                const exportData = {
+                    ...searchConfig,
+                    startDate: startDateInput.value,
+                    endDate: endDateInput.value,
+                    sortAsc: sortOrderToggle.checked
+                };
+                const dataStr = JSON.stringify(exportData, null, 2);
                 const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([dataStr], {type: 'application/json'}));
                 a.download = `ricerca_emplifi_${new Date().toISOString().split('T')[0]}.json`;
-                a.href = url;
-                document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                URL.revokeObjectURL(a.href);
                 showFeedback('Ricerca esportata!');
             });
 
             importFile.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const importedConfig = JSON.parse(e.target.result);
                         startDateInput.value = importedConfig.startDate || formatDate(new Date());
                         endDateInput.value = importedConfig.endDate || formatDate(new Date());
-                        keywordToggle.checked = importedConfig.keywordsEnabled || false;
-                        keywordInputs.classList.toggle('hidden', !keywordToggle.checked);
-                        searchConfig.keywords = importedConfig.keywords || [];
+                        sortOrderToggle.checked = importedConfig.sortAsc || false;
+                        searchConfig.includeKeywords = importedConfig.includeKeywords || [];
+                        searchConfig.excludeKeywords = importedConfig.excludeKeywords || [];
                         renderKeywords();
                         showFeedback('Ricerca importata con successo!');
                     } catch (err) {
@@ -628,11 +610,12 @@
                     }
                 };
                 reader.readAsText(file);
-                importFile.value = ''; // Permette di ricaricare lo stesso file
+                importFile.value = '';
             });
 
-            // Listener per il bottone di reset
-            resetButton.addEventListener('click', resetApp);
+            resetButton.addEventListener('click', () => {
+                location.reload();
+            });
         });
     </script>
 </body>
