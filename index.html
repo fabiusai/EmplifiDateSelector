@@ -369,7 +369,7 @@
                 </div>
                 <ul id="includeKeywordList"></ul>
                 <!-- MODIFICA QUI: Aggiunta nota esplicativa -->
-                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Per una ricerca esatta, inserisci la frase tra virgolette (es. "salone dei pagamenti").</small>
+                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Le frasi con spazi (es. salone dei pagamenti) verranno cercate come frasi esatte.</small>
 
 
                 <div class="subsection-title" style="margin-top: 20px;">Parole da escludere (nessuna)</div>
@@ -380,7 +380,7 @@
                 </div>
                 <ul id="excludeKeywordList"></ul>
                 <!-- MODIFICA QUI: Aggiunta nota esplicativa -->
-                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Puoi inserire una frase intera da escludere (anche tra virgolette).</small>
+                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Le frasi con spazi verranno escluse come frasi esatte.</small>
                 
                 <div class="toggle-switch-container" style="margin-top: 20px;">
                     <label for="sortOrderToggle">Ordina dal più vecchio al più nuovo</label>
@@ -553,18 +553,26 @@
                         let processedKw = kw.trim();
                         let tagId;
 
-                        if (processedKw.startsWith('"') && processedKw.endsWith('"')) {
-                            // Caso: Frase esatta (es. "salone dei pagamenti")
-                            // 1. Rimuovi le virgolette esterne
-                            processedKw = processedKw.substring(1, processedKw.length - 1);
+                        // NUOVA LOGICA:
+                        // Se contiene spazi OPPURE se è già tra virgolette, trattala come frase esatta.
+                        if (processedKw.includes(' ') || (processedKw.startsWith('"') && processedKw.endsWith('"'))) {
+                            
+                            // Caso: Frase esatta (automatica o manuale)
+                            
+                            // 1. Pulisci le virgolette se presenti, per evitare " "salone" "
+                            if (processedKw.startsWith('"') && processedKw.endsWith('"')) {
+                                processedKw = processedKw.substring(1, processedKw.length - 1);
+                            }
+                            
                             // 2. Sostituisci spazi interni con '+'
                             processedKw = processedKw.trim().replace(/\s/g, '+');
-                            // 3. Costruisci l'ID con le virgolette escaped (doppio backslash per stringa JSON)
+                            
+                            // 3. Costruisci l'ID con le virgolette escaped
                             tagId = `fulltext\\"${processedKw}\\"`;
+
                         } else {
-                            // Caso: Parola/e singole (vecchia logica)
-                            processedKw = processedKw.replace(/\s/g, '+');
-                            tagId = `fulltext${processedKw}`;
+                            // Caso: Parola singola (nessuno spazio, nessuna virgoletta)
+                            tagId = `fulltext${processedKw}`; // Non c'è bisogno di replace, non ci sono spazi.
                         }
 
                         return { id: tagId, excluded: excluded };
@@ -651,4 +659,5 @@
     </script>
 </body>
 </html>
+
 
