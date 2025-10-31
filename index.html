@@ -363,17 +363,24 @@
                 <h2 class="section-title"><i class="fas fa-filter"></i> Filtri e Ordinamento</h2>
                 <div class="subsection-title">Parole da includere (almeno una)</div>
                  <div class="keyword-input-group">
-                    <input type="text" id="includeKeywordInput" placeholder="Includi parola...">
+                    <!-- MODIFICA QUI -->
+                    <input type="text" id="includeKeywordInput" placeholder="Includi parola o frase...">
                     <button id="addIncludeKeywordButton" class="btn btn-secondary"><i class="fas fa-plus"></i></button>
                 </div>
                 <ul id="includeKeywordList"></ul>
+                <!-- MODIFICA QUI: Aggiunta nota esplicativa -->
+                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Per una ricerca esatta, inserisci la frase tra virgolette (es. "salone dei pagamenti").</small>
+
 
                 <div class="subsection-title" style="margin-top: 20px;">Parole da escludere (nessuna)</div>
                  <div class="keyword-input-group">
-                    <input type="text" id="excludeKeywordInput" placeholder="Escludi parola...">
+                    <!-- MODIFICA QUI -->
+                    <input type="text" id="excludeKeywordInput" placeholder="Escludi parola o frase...">
                     <button id="addExcludeKeywordButton" class="btn btn-secondary"><i class="fas fa-plus"></i></button>
                 </div>
                 <ul id="excludeKeywordList"></ul>
+                <!-- MODIFICA QUI: Aggiunta nota esplicativa -->
+                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Puoi inserire una frase intera da escludere (anche tra virgolette).</small>
                 
                 <div class="toggle-switch-container" style="margin-top: 20px;">
                     <label for="sortOrderToggle">Ordina dal più vecchio al più nuovo</label>
@@ -493,7 +500,9 @@
 
             function setupKeywordInput(inputElement, addButton, keywordArray) {
                 const addKeyword = () => {
-                    const keyword = inputElement.value.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+                    // Questa logica prende l'intera stringa, inclusi gli spazi
+                    // MODIFICA: Permetti anche le virgolette "
+                    const keyword = inputElement.value.trim().replace(/[^a-zA-Z0-9\s\"]/g, '');
                     if (keyword && !keywordArray.includes(keyword)) {
                         keywordArray.push(keyword);
                         renderKeywords();
@@ -537,10 +546,33 @@
                     
                     let finalFilter = [...baseFilter];
                     
-                    // --- CORREZIONE APPLICATA QUI ---
-                    const includedTags = searchConfig.includeKeywords.map(kw => ({ id: `fulltext${kw.trim().replace(/\s/g, '+')}`, excluded: false }));
-                    const excludedTags = searchConfig.excludeKeywords.map(kw => ({ id: `fulltext${kw.trim().replace(/\s/g, '+')}`, excluded: true }));
-                    // --- FINE CORREZIONE ---
+                    // --- QUESTA È LA LOGICA CORRETTA GIÀ PRESENTE ---
+                    // Prende ogni frase (es. "salone dei pagamenti") e sostituisce gli spazi con '+'
+                    // MODIFICA: Aggiunta logica per frasi esatte vs parole chiave
+                    const createTag = (kw, excluded) => {
+                        let processedKw = kw.trim();
+                        let tagId;
+
+                        if (processedKw.startsWith('"') && processedKw.endsWith('"')) {
+                            // Caso: Frase esatta (es. "salone dei pagamenti")
+                            // 1. Rimuovi le virgolette esterne
+                            processedKw = processedKw.substring(1, processedKw.length - 1);
+                            // 2. Sostituisci spazi interni con '+'
+                            processedKw = processedKw.trim().replace(/\s/g, '+');
+                            // 3. Costruisci l'ID con le virgolette escaped (doppio backslash per stringa JSON)
+                            tagId = `fulltext\\"${processedKw}\\"`;
+                        } else {
+                            // Caso: Parola/e singole (vecchia logica)
+                            processedKw = processedKw.replace(/\s/g, '+');
+                            tagId = `fulltext${processedKw}`;
+                        }
+
+                        return { id: tagId, excluded: excluded };
+                    };
+
+                    const includedTags = searchConfig.includeKeywords.map(kw => createTag(kw, false));
+                    const excludedTags = searchConfig.excludeKeywords.map(kw => createTag(kw, true));
+                    // --- FINE LOGICA ---
                     
                     const allKeywordTags = [...includedTags, ...excludedTags];
 
@@ -619,3 +651,4 @@
     </script>
 </body>
 </html>
+
