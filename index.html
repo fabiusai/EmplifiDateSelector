@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emplifi Link Generator</title>
     <link rel="icon" href="favicon.ico">
+    
+    <!-- Import per icone Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <!-- Import font 'Inter' per un look pulito e moderno -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* Import per icone */
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css');
-        
         /* Reset e base */
         * {
             margin: 0;
@@ -17,42 +23,58 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f6; /* Un grigio molto chiaro per lo sfondo */
             color: #333;
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
         }
 
+        /* Colori Istituzionali */
+        :root {
+            --colore-blu: #0146bc;
+            --colore-giallo: #eddc01;
+            --colore-testo: #222;
+            --colore-testo-chiaro: #555;
+            --colore-bordo: #dee2e6;
+            --colore-rosso-bordo: #dc3545;
+            --colore-rosso-sfondo: #fdf2f2;
+        }
+
         .main-container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px auto;
             background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.07);
+            border-radius: 8px;
+            /* Riquadro ben delimitato con bordo sottile */
+            border: 1px solid var(--colore-bordo);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #1a5490 0%, #2c5aa0 100%);
-            padding: 32px 40px;
-            text-align: center;
+            /* Colore blu istituzionale */
+            background: var(--colore-blu);
+            padding: 24px 40px;
+            text-align: left;
+            /* Akxent giallo istituzionale */
+            border-bottom: 4px solid var(--colore-giallo);
         }
 
         .header h1 {
             color: #ffffff;
-            font-size: 2rem;
+            font-size: 1.75rem; /* Più grande e d'impatto */
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .header .subtitle {
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 400;
-            opacity: 0.9;
+            opacity: 0.85;
         }
 
         /* Sezione principale */
@@ -64,26 +86,27 @@
             margin-bottom: 35px;
         }
 
+        /* Titoli e Sottotitoli Esplicativi */
         .section-title {
-            color: #1a5490;
-            font-size: 1.3rem;
-            font-weight: 600;
+            color: var(--colore-blu); /* Titoli nel colore blu */
+            font-size: 1.25rem;
+            font-weight: 700;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 12px;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid #f0f2f5;
             padding-bottom: 10px;
         }
         
         .subsection-title {
             font-size: 1rem;
             font-weight: 600;
-            color: #495057;
+            color: var(--colore-testo); /* Testo standard scuro */
             margin-bottom: 15px;
         }
 
-        /* Selezioni rapide date */
+        /* Selezioni rapide date (Bottoni flat) */
         .preset-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -92,22 +115,24 @@
         }
 
         .btn-preset {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            color: #495057;
+            background-color: #ffffff;
+            border: 1px solid var(--colore-bordo);
+            color: var(--colore-testo-chiaro);
             padding: 8px 15px;
-            border-radius: 20px;
+            border-radius: 4px; /* Angoli meno arrotondati, più netti */
             font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .btn-preset:hover {
-            background-color: #e9ecef;
-            border-color: #ced4da;
-            color: #212529;
+            background-color: #f8f9fa;
+            border-color: var(--colore-blu);
+            color: var(--colore-blu);
         }
         
+        /* Input date (Flat) */
         .date-picker-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -116,17 +141,17 @@
 
         .date-input label {
             font-weight: 600;
-            color: #1a5490;
-            font-size: 0.95rem;
+            color: var(--colore-testo-chiaro);
+            font-size: 0.9rem;
             margin-bottom: 8px;
             display: block;
         }
 
         .date-input input[type="date"] {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--colore-bordo);
+            border-radius: 4px;
             font-size: 1rem;
             font-family: inherit;
             transition: all 0.2s ease;
@@ -134,8 +159,9 @@
 
         .date-input input[type="date"]:focus {
             outline: none;
-            border-color: #1a5490;
-            box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.15);
+            border-color: var(--colore-blu);
+            /* Focus state blu, come da branding */
+            box-shadow: 0 0 0 2px rgba(1, 70, 188, 0.2);
         }
 
         /* Filtro Parole Chiave & Ordinamento */
@@ -146,28 +172,23 @@
             margin-bottom: 20px;
         }
 
+        /* Toggle switch ri-colorato */
         .toggle-switch {
             position: relative;
             display: inline-block;
             width: 50px;
             height: 28px;
         }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider {
-            position: absolute;
-            cursor: pointer;
+            position: absolute; cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: #ccc;
             transition: .4s;
             border-radius: 28px;
         }
         .slider:before {
-            position: absolute;
-            content: "";
+            position: absolute; content: "";
             height: 20px; width: 20px;
             left: 4px; bottom: 4px;
             background-color: white;
@@ -175,7 +196,7 @@
             border-radius: 50%;
         }
         input:checked + .slider {
-            background-color: #28a745;
+            background-color: var(--colore-blu); /* Blu invece di verde */
         }
         input:checked + .slider:before {
             transform: translateX(22px);
@@ -188,51 +209,68 @@
         }
         .keyword-input-group input {
             flex-grow: 1;
-            padding: 12px 14px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--colore-bordo);
+            border-radius: 4px;
             font-size: 1rem;
         }
+        .keyword-input-group input:focus {
+            outline: none;
+            border-color: var(--colore-blu);
+            box-shadow: 0 0 0 2px rgba(1, 70, 188, 0.2);
+        }
+
+        /* Stile per i tag keyword */
         #includeKeywordList, #excludeKeywordList {
             list-style: none;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             min-height: 38px;
+            margin-bottom: 5px;
         }
         #includeKeywordList li {
-            background-color: #e0eaff;
-            color: #004085;
+            background-color: #e6f0ff; /* Sfondo blu chiaro */
+            color: var(--colore-blu);
+            border: 1px solid #b3d1ff;
         }
         #excludeKeywordList li {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: var(--colore-rosso-sfondo); /* Sfondo rosso chiaro */
+            color: var(--colore-rosso-bordo);
+            border: 1px solid #f5c6cb;
         }
         #includeKeywordList li, #excludeKeywordList li {
             display: flex;
             align-items: center;
             padding: 5px 12px;
-            border-radius: 15px;
+            border-radius: 4px;
             font-size: 0.9rem;
+            font-weight: 600;
         }
         .remove-keyword {
             background: none;
             border: none;
             margin-left: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: inherit;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .remove-keyword:hover {
+            opacity: 1;
         }
 
-        /* Bottoni Azione */
+        /* Bottoni Azione (Flat Design) */
         .actions-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 15px;
-            padding: 25px 0;
-            border-top: 1px solid #e9ecef;
+            padding: 25px 40px;
+            border-top: 1px solid #f0f2f5;
             margin-top: 20px;
+            background-color: #fdfdfd;
         }
 
         .btn {
@@ -240,57 +278,85 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 10px 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            text-transform: uppercase; /* Stile più formale */
+            text-decoration: none; /* Per il tag <a> */
+            line-height: 1.5;
         }
 
+        /* Stato disabilitato per feedback contestuale */
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        /* Bottone Primario (Giallo) */
         .btn-primary {
-            background: linear-gradient(135deg, #1a5490 0%, #2c5aa0 100%);
-            color: white;
+            background: var(--colore-giallo);
+            color: var(--colore-blu);
+            border-color: var(--colore-giallo);
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(26, 84, 144, 0.3);
+        .btn-primary:hover:not(:disabled) {
+            background: #d4c400; /* Giallo più scuro */
+            border-color: #d4c400;
         }
 
-        .btn-secondary {
-            background: #f8f9fa;
-            color: #1a5490;
-            border: 1px solid #ced4da;
+        /* Bottone Successo (Blu Pieno) */
+        .btn-success {
+            background: var(--colore-blu);
+            color: white;
+            border-color: var(--colore-blu);
         }
-        .btn-secondary:hover {
-            background: #e9ecef;
+        .btn-success:hover:not(:disabled) {
+            background: #013da7; /* Blu più scuro */
+            border-color: #013da7;
+        }
+
+        /* Bottone Secondario (Blu Outline) */
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--colore-blu);
+            border-color: var(--colore-blu);
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: #f0f5ff; /* Sfondo leggermente blu */
+        }
+
+        /* Bottone Danger (Rosso Outline) */
+        .btn-danger {
+            background: #ffffff;
+            color: var(--colore-rosso-bordo);
+            border-color: var(--colore-rosso-bordo);
+        }
+        .btn-danger:hover:not(:disabled) {
+            background: var(--colore-rosso-sfondo);
         }
         
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-            border: 1px solid #dc3545;
-        }
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
+        /* Bottone per Aggiungi Keyword (+), piccolo e quadrato */
+        .btn-icon {
+            padding: 10px;
+            width: 44px; /* Altezza fissa */
+            height: 44px;
+            font-size: 1rem;
         }
 
         /* Sezione Risultati */
-        #outputSection.hidden, #keywordInputs.hidden {
+        #outputSection.hidden {
             display: none;
         }
         
         .results-card {
             background: #f8f9fa;
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 25px;
             text-align: center;
+            border: 1px solid var(--colore-bordo);
         }
         
         .button-group {
@@ -299,28 +365,41 @@
             gap: 15px;
         }
 
-        /* Feedback */
+        /* Feedback Toast */
         .feedback {
             position: fixed;
             top: 20px; right: 20px;
-            background: #28a745;
+            /* Blu istituzionale per il feedback */
+            background: var(--colore-blu);
             color: white;
             padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             transform: translateX(120%);
             transition: transform 0.4s ease-in-out;
             z-index: 1000;
+            font-weight: 600;
         }
         .feedback.show {
             transform: translateX(0);
         }
         
+        /* Layout responsivo */
         @media (max-width: 768px) {
             body { padding: 0; }
-            .main-container { border-radius: 0; }
+            .main-container { 
+                border-radius: 0; 
+                margin: 0;
+                border: none;
+                box-shadow: none;
+            }
+            .header { padding: 24px 20px; }
             .content-section { padding: 20px; }
-            .button-group, .preset-buttons, .actions-container { flex-direction: column; width: 100%;}
+            .actions-container { padding: 20px; }
+            .button-group, .preset-buttons, .actions-container { 
+                flex-direction: column; 
+                width: 100%;
+            }
             .btn { width: 100%; }
         }
 
@@ -363,23 +442,21 @@
                 <h2 class="section-title"><i class="fas fa-filter"></i> Filtri e Ordinamento</h2>
                 <div class="subsection-title">Parole o frasi da includere</div>
                  <div class="keyword-input-group">
-                    <!-- MODIFICA QUI -->
                     <input type="text" id="includeKeywordInput" placeholder="Includi parola o frase...">
-                    <button id="addIncludeKeywordButton" class="btn btn-secondary"><i class="fas fa-plus"></i></button>
+                    <!-- Bottone Icona aggiornato -->
+                    <button id="addIncludeKeywordButton" class="btn btn-secondary btn-icon"><i class="fas fa-plus"></i></button>
                 </div>
                 <ul id="includeKeywordList"></ul>
-                <!-- MODIFICA QUI: Aggiunta nota esplicativa -->
                 <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Le frasi con spazi (es. salone dei pagamenti) verranno cercate come frasi esatte.</small>
 
 
                 <div class="subsection-title" style="margin-top: 20px;">Parole da escludere (nessuna)</div>
                  <div class="keyword-input-group">
-                    <!-- MODIFICA QUI -->
                     <input type="text" id="excludeKeywordInput" placeholder="Escludi parola o frase...">
-                    <button id="addExcludeKeywordButton" class="btn btn-secondary"><i class="fas fa-plus"></i></button>
+                    <!-- Bottone Icona aggiornato -->
+                    <button id="addExcludeKeywordButton" class="btn btn-secondary btn-icon"><i class="fas fa-plus"></i></button>
                 </div>
                 <ul id="excludeKeywordList"></ul>
-                <!-- MODIFICA QUI: Aggiunta nota esplicativa -->
                 <small style="color: #6c757d; font-size: 0.85rem; margin-top: 5px; display: block;">Le frasi con spazi verranno escluse come frasi esatte.</small>
                 
                 <div class="toggle-switch-container" style="margin-top: 20px;">
@@ -391,6 +468,7 @@
                 </div>
             </div>
 
+            <!-- Contenitore Azioni (Bottoni aggiornati) -->
             <div class="actions-container">
                 <button id="processButton" class="btn btn-primary"><i class="fas fa-cog"></i> Elabora Link</button>
                 <button id="exportButton" class="btn btn-secondary"><i class="fas fa-file-export"></i> Esporta</button>
@@ -434,6 +512,7 @@
             const sortOrderToggle = document.getElementById('sortOrderToggle');
             const exportButton = document.getElementById('exportButton');
             const importFile = document.getElementById('importFile');
+            const importLabel = document.querySelector('label[for="importFile"]');
             const resetButton = document.getElementById('resetButton');
             
             let searchConfig = {
@@ -445,6 +524,51 @@
 
             const cleanBaseUrl = 'https://app.emplifi.io/307036/content/feed/';
             const baseFilter = [{"operator":"AND","tags":[{"id":"c9d62b17be3049459e1fe071beccbfa0","excluded":true}],"type":"POST_LABEL"},{"operator":"OR","tags":[{"id":"OUTGOING","excluded":false}],"type":"ORIGIN"},{"operator":"OR","type":"PROFILE","tags":[{"id":"linkedin-urn:li:organization:7046","excluded":false},{"id":"instagram-17841404664900795","excluded":false},{"id":"youtube-UCn4BzT_EeCOUUyF6GJrsQxA","excluded":false},{"id":"twitter-388197163","excluded":false},{"id":"facebook-115066385228297","excluded":false},{"id":"facebook-55933404846","excluded":false},{"id":"facebook-167618226659138","excluded":false},{"id":"instagram-17841401517098538","excluded":false}]},{"operator":"OR","type":"CONTENT_TYPE","tags":[{"id":"POSTS","excluded":false},{"id":"STORIES","excluded":false},{"id":"SHARES","excluded":false}]},{"type":"PUBLISHED_STATUS","tags":[{"id":"PUBLISHED","excluded":false}],"operator":"OR"}];
+
+            // --- INIZIO LOGICA FEEDBACK CONTESTUALE BOTTONI ---
+            const originalButtonText = new Map();
+
+            /**
+             * Salva il testo originale, mostra il testo di caricamento e disabilita il bottone.
+             * @param {HTMLElement} button - Il bottone da modificare.
+             * @param {string} loadingText - Il testo HTML da mostrare (es. con icona spinner).
+             */
+            const setButtonLoading = (button, loadingText) => {
+                if (!originalButtonText.has(button)) {
+                    originalButtonText.set(button, button.innerHTML);
+                }
+                button.innerHTML = loadingText;
+                button.disabled = true;
+            };
+
+            /**
+             * Mostra un messaggio di completamento (es. "Fatto!") e ripristina il bottone dopo un ritardo.
+             * @param {HTMLElement} button - Il bottone da modificare.
+             * @param {string} doneText - Il testo HTML da mostrare (es. con icona check).
+             * @param {number} [revertDelay=1500] - Millisecondi prima di ripristinare il testo originale.
+             */
+            const setButtonDone = (button, doneText, revertDelay = 1500) => {
+                button.innerHTML = doneText;
+                // Mantiene disabilitato per la durata del messaggio "Done"
+                button.disabled = true; 
+                setTimeout(() => {
+                    resetButtonState(button); // Riabilita e ripristina
+                }, revertDelay);
+            };
+            
+            /**
+             * Ripristina immediatamente il testo e lo stato abilitato del bottone.
+             * @param {HTMLElement} button - Il bottone da ripristinare.
+             */
+            const resetButtonState = (button) => {
+                 if (originalButtonText.has(button)) {
+                    button.innerHTML = originalButtonText.get(button);
+                    originalButtonText.delete(button);
+                }
+                button.disabled = false;
+            };
+            // --- FINE LOGICA FEEDBACK CONTESTUALE BOTTONI ---
+
 
             const formatDate = (date) => date.toISOString().split('T')[0];
 
@@ -500,8 +624,6 @@
 
             function setupKeywordInput(inputElement, addButton, keywordArray) {
                 const addKeyword = () => {
-                    // Questa logica prende l'intera stringa, inclusi gli spazi
-                    // MODIFICA: Permetti anche le virgolette "
                     const keyword = inputElement.value.trim().replace(/[^a-zA-Z0-9\s\"]/g, '');
                     if (keyword && !keywordArray.includes(keyword)) {
                         keywordArray.push(keyword);
@@ -536,8 +658,13 @@
             });
 
             processButton.addEventListener('click', () => {
+                // Feedback contestuale: Caricamento
+                setButtonLoading(processButton, '<i class="fas fa-spinner fa-spin"></i> Elaborazione...');
+
                 if (!startDateInput.value || !endDateInput.value || new Date(startDateInput.value) > new Date(endDateInput.value)) {
                     showFeedback('Per favore, seleziona un intervallo di date valido.');
+                    // Feedback contestuale: Ripristino su errore
+                    resetButtonState(processButton);
                     return;
                 }
                 try {
@@ -546,42 +673,23 @@
                     
                     let finalFilter = [...baseFilter];
                     
-                    // --- QUESTA È LA LOGICA CORRETTA GIÀ PRESENTE ---
-                    // Prende ogni frase (es. "salone dei pagamenti") e sostituisce gli spazi con '+'
-                    // MODIFICA: Aggiunta logica per frasi esatte vs parole chiave
                     const createTag = (kw, excluded) => {
                         let processedKw = kw.trim();
                         let tagId;
-
-                        // NUOVA LOGICA:
-                        // Se contiene spazi OPPURE se è già tra virgolette, trattala come frase esatta.
                         if (processedKw.includes(' ') || (processedKw.startsWith('"') && processedKw.endsWith('"'))) {
-                            
-                            // Caso: Frase esatta (automatica o manuale)
-                            
-                            // 1. Pulisci le virgolette se presenti, per evitare " "salone" "
                             if (processedKw.startsWith('"') && processedKw.endsWith('"')) {
                                 processedKw = processedKw.substring(1, processedKw.length - 1);
                             }
-                            
-                            // 2. Sostituisci spazi interni con '+'
                             processedKw = processedKw.trim().replace(/\s/g, '+');
-                            
-                            // 3. Costruisci l'ID con le virgolette escaped
                             tagId = `fulltext\\"${processedKw}\\"`;
-
                         } else {
-                            // Caso: Parola singola (nessuno spazio, nessuna virgoletta)
-                            tagId = `fulltext${processedKw}`; // Non c'è bisogno di replace, non ci sono spazi.
+                            tagId = `fulltext${processedKw}`;
                         }
-
                         return { id: tagId, excluded: excluded };
                     };
 
                     const includedTags = searchConfig.includeKeywords.map(kw => createTag(kw, false));
                     const excludedTags = searchConfig.excludeKeywords.map(kw => createTag(kw, true));
-                    // --- FINE LOGICA ---
-                    
                     const allKeywordTags = [...includedTags, ...excludedTags];
 
                     if (allKeywordTags.length > 0) {
@@ -593,7 +701,6 @@
                     }
                     
                     params.set('filter', JSON.stringify(finalFilter));
-
                     const sortObj = { by: "createdTime", order: sortOrderToggle.checked ? "asc" : "desc" };
                     params.set('sort', JSON.stringify(sortObj));
                     params.set('display', 'stream');
@@ -603,18 +710,35 @@
 
                     outputSection.classList.remove('hidden');
                     showFeedback('Link generato con successo!');
+                    
+                    // Feedback contestuale: Fatto!
+                    setButtonDone(processButton, '<i class="fas fa-check"></i> Fatto!');
+
                 } catch (error) {
                     console.error("Errore generazione URL:", error);
                     showFeedback("Si è verificato un errore.");
+                    // Feedback contestuale: Errore
+                    setButtonDone(processButton, '<i class="fas fa-times"></i> Errore', 2000);
                 }
             });
 
             copyButton.addEventListener('click', () => {
                 if (!generatedUrl) return;
-                navigator.clipboard.writeText(generatedUrl).then(() => showFeedback('URL copiato!'));
+                
+                setButtonLoading(copyButton, '<i class="fas fa-spinner fa-spin"></i> Copia...');
+                
+                navigator.clipboard.writeText(generatedUrl).then(() => {
+                    showFeedback('URL copiato!');
+                    setButtonDone(copyButton, '<i class="fas fa-check"></i> Copiato!');
+                }, () => {
+                    showFeedback('Errore copia URL.');
+                    setButtonDone(copyButton, '<i class="fas fa-times"></i> Errore', 2000);
+                });
             });
 
             exportButton.addEventListener('click', () => {
+                setButtonLoading(exportButton, '<i class="fas fa-spinner fa-spin"></i> Esporto...');
+                
                 const exportData = {
                     ...searchConfig,
                     startDate: startDateInput.value,
@@ -627,12 +751,18 @@
                 a.download = `ricerca_emplifi_${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
                 URL.revokeObjectURL(a.href);
+                
                 showFeedback('Ricerca esportata!');
+                setButtonDone(exportButton, '<i class="fas fa-check"></i> Esportato!');
             });
 
             importFile.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
+
+                // Feedback sul bottone-label
+                setButtonLoading(importLabel, '<i class="fas fa-spinner fa-spin"></i> Carico...');
+                
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
@@ -643,21 +773,27 @@
                         searchConfig.includeKeywords = importedConfig.includeKeywords || [];
                         searchConfig.excludeKeywords = importedConfig.excludeKeywords || [];
                         renderKeywords();
+                        
                         showFeedback('Ricerca importata con successo!');
+                        setButtonDone(importLabel, '<i class="fas fa-check"></i> Importato!');
                     } catch (err) {
                         showFeedback('Errore nel leggere il file JSON.');
+                        setButtonDone(importLabel, '<i class="fas fa-times"></i> Errore File', 2000);
                     }
                 };
                 reader.readAsText(file);
-                importFile.value = '';
+                importFile.value = ''; // Resetta l'input file per futuri caricamenti
             });
 
             resetButton.addEventListener('click', () => {
-                location.reload();
+                // Mostra feedback e ricarica
+                setButtonLoading(resetButton, '<i class="fas fa-spinner fa-spin"></i> Reset...');
+                // Aggiungi un piccolo ritardo per far vedere lo spinner prima del ricaricamento
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
             });
         });
     </script>
 </body>
 </html>
-
-
