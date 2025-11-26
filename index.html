@@ -523,11 +523,6 @@
             // --- INIZIO LOGICA FEEDBACK CONTESTUALE BOTTONI ---
             const originalButtonText = new Map();
 
-            /**
-             * Salva il testo originale, mostra il testo di caricamento e disabilita il bottone.
-             * @param {HTMLElement} button - Il bottone da modificare.
-             * @param {string} loadingText - Il testo HTML da mostrare (es. con icona spinner).
-             */
             const setButtonLoading = (button, loadingText) => {
                 if (!originalButtonText.has(button)) {
                     originalButtonText.set(button, button.innerHTML);
@@ -536,25 +531,14 @@
                 button.disabled = true;
             };
 
-            /**
-             * Mostra un messaggio di completamento (es. "Fatto!") e ripristina il bottone dopo un ritardo.
-             * @param {HTMLElement} button - Il bottone da modificare.
-             * @param {string} doneText - Il testo HTML da mostrare (es. con icona check).
-             * @param {number} [revertDelay=1500] - Millisecondi prima di ripristinare il testo originale.
-             */
             const setButtonDone = (button, doneText, revertDelay = 1500) => {
                 button.innerHTML = doneText;
-                // Mantiene disabilitato per la durata del messaggio "Done"
                 button.disabled = true; 
                 setTimeout(() => {
-                    resetButtonState(button); // Riabilita e ripristina
+                    resetButtonState(button); 
                 }, revertDelay);
             };
             
-            /**
-             * Ripristina immediatamente il testo e lo stato abilitato del bottone.
-             * @param {HTMLElement} button - Il bottone da ripristinare.
-             */
             const resetButtonState = (button) => {
                  if (originalButtonText.has(button)) {
                     button.innerHTML = originalButtonText.get(button);
@@ -619,6 +603,7 @@
 
             function setupKeywordInput(inputElement, addButton, keywordArray) {
                 const addKeyword = () => {
+                    // Manteniamo virgolette e spazi, puliamo solo caratteri strani
                     const keyword = inputElement.value.trim().replace(/[^a-zA-Z0-9\s\"]/g, '');
                     if (keyword && !keywordArray.includes(keyword)) {
                         keywordArray.push(keyword);
@@ -653,12 +638,10 @@
             });
 
             processButton.addEventListener('click', () => {
-                // Feedback contestuale: Caricamento
                 setButtonLoading(processButton, '<i class="fas fa-spinner fa-spin"></i> Elaborazione...');
 
                 if (!startDateInput.value || !endDateInput.value || new Date(startDateInput.value) > new Date(endDateInput.value)) {
                     showFeedback('Per favore, seleziona un intervallo di date valido.');
-                    // Feedback contestuale: Ripristino su errore
                     resetButtonState(processButton);
                     return;
                 }
@@ -668,21 +651,33 @@
                     
                     let finalFilter = [...baseFilter];
                     
+                    // --- CORREZIONE: Funzione createTag robusta ---
                     const createTag = (kw, excluded) => {
                         let processedKw = kw.trim();
+                        // Controlla se ci sono virgolette esplicite
+                        const hasUserQuotes = processedKw.startsWith('"') && processedKw.endsWith('"');
+                        if (hasUserQuotes) {
+                            processedKw = processedKw.substring(1, processedKw.length - 1).trim();
+                        }
+
+                        // Determina se serve la ricerca esatta (frase)
+                        const needsExactMatch = hasUserQuotes || processedKw.includes(' ');
+
+                        // Normalizza gli spazi
+                        processedKw = processedKw.replace(/\s+/g, '+');
+
                         let tagId;
-                        if (processedKw.includes(' ') || (processedKw.startsWith('"') && processedKw.endsWith('"'))) {
-                            if (processedKw.startsWith('"') && processedKw.endsWith('"')) {
-                                processedKw = processedKw.substring(1, processedKw.length - 1);
-                            }
-                            processedKw = processedKw.trim().replace(/\s/g, '+');
-                            // MODIFICA QUI: Rimosse le virgolette extra e i backslash
-                            tagId = `fulltext${processedKw}`;
+                        if (needsExactMatch) {
+                            // Costruisce la stringa 'fulltext\"Parola+Parola\"'
+                            // Usiamo l'escape esplicito per il backslash
+                            tagId = 'fulltext\\"' + processedKw + '\\"';
                         } else {
-                            tagId = `fulltext${processedKw}`;
+                            // Parola singola: 'fulltextParola'
+                            tagId = 'fulltext' + processedKw;
                         }
                         return { id: tagId, excluded: excluded };
                     };
+                    // ----------------------------------------------
 
                     const includedTags = searchConfig.includeKeywords.map(kw => createTag(kw, false));
                     const excludedTags = searchConfig.excludeKeywords.map(kw => createTag(kw, true));
@@ -707,13 +702,11 @@
                     outputSection.classList.remove('hidden');
                     showFeedback('Link generato con successo!');
                     
-                    // Feedback contestuale: Fatto!
                     setButtonDone(processButton, '<i class="fas fa-check"></i> Fatto!');
 
                 } catch (error) {
                     console.error("Errore generazione URL:", error);
                     showFeedback("Si è verificato un errore.");
-                    // Feedback contestuale: Errore
                     setButtonDone(processButton, '<i class="fas fa-times"></i> Errore', 2000);
                 }
             });
@@ -756,7 +749,6 @@
                 const file = event.target.files[0];
                 if (!file) return;
 
-                // Feedback sul bottone-label
                 setButtonLoading(importLabel, '<i class="fas fa-spinner fa-spin"></i> Carico...');
                 
                 const reader = new FileReader();
@@ -778,13 +770,11 @@
                     }
                 };
                 reader.readAsText(file);
-                importFile.value = ''; // Resetta l'input file per futuri caricamenti
+                importFile.value = ''; 
             });
 
             resetButton.addEventListener('click', () => {
-                // Mostra feedback e ricarica
                 setButtonLoading(resetButton, '<i class="fas fa-spinner fa-spin"></i> Reset...');
-                // Aggiungi un piccolo ritardo per far vedere lo spinner prima del ricaricamento
                 setTimeout(() => {
                     location.reload();
                 }, 500);
